@@ -13,7 +13,9 @@ def verify_sig(event_id):
 
 @app.route("/")
 def index():
-    return "Timing attack server running.. \n Try testing eventid: 19295929 signature: 2802b7a0"
+    return "Timing attack server running.. <br/><br/>" \
+    "<u>Test Parameters</u><br/> EventID: 19295929 <br/> Signature: 2802b7a0" \
+    "<br/> <a href='/events/19295929/2802b7a0/'>http://localhost:5000/events/19295929/2802b7a0/</a>"
 
 @app.route("/events/<event_id>/<signature>/")
 def events(event_id, signature):
@@ -26,5 +28,4 @@ def events(event_id, signature):
         abort(404)
 
 if __name__ == "__main__":
-    #print hash_signature('19295929')
     app.run()
