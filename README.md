@@ -4,21 +4,21 @@ Right now this tool can execute a timing attack against a local or remote server
 
 ## Installation
 ### Step 1. Clone repo
- '''
+ ```
  git clone git@github.com:dkhonig/web_timing_attack.git
- '''
+ ```
 ### Step 2:  Install dependencies
- '''
+ ```
  pip install -r requirements.txt
- '''
+ ```
 ### Step 3: Start server
- '''
+ ```
  ./server.py
- '''
+ ```
 ### Step 4: Launch attack
- '''
+ ```
   ./web_timing_attack.py (look at usages below)
- '''
+ ```
 
 ## Usage
 ```
