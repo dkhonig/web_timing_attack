@@ -3,16 +3,19 @@ This project is an ongoing experiment that is testing the theoretical aspects of
 Right now this tool can execute a timing attack against a local or remote server that is using a constant time equality check to verify a signature.
 
 ## Installation
- 1. Clone repo
- 2. Install dependencies: 
+### Step 1. Clone repo
+ '''
+ git clone git@github.com:dkhonig/web_timing_attack.git
+ '''
+### Step 2:  Install dependencies
  '''
  pip install -r requirements.txt
  '''
- 3. Start server: 
+### Step 3: Start server
  '''
  ./server.py
  '''
- 4. Launch attack:
+### Step 4: Launch attack
  '''
   ./web_timing_attack.py (look at usages below)
  '''
