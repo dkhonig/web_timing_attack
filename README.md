@@ -51,4 +51,4 @@ optional arguments:
 5. Submit a pull request :D
 
 ## License
-TODO: Write license
+The underlying source code used in this project is licensed under the MIT [license](LICENSE.md).
