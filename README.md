@@ -1,21 +1,26 @@
 # Web Timing Attack
-This project is an ongoing experiment that is testing the theoretical aspects of side channel attacks on cryptographic operations. 
-Right now this tool can execute a timing attack against a local or remote server that is using a constant time equality check to verify a signature.
+This project is an ongoing experiment testing the theoretical aspects of side channel attacks on cryptographic operations such as signature verification. 
+Currently this tool can execute a timing attack against a local or remote server that is using a constant time equality check to verify a signature.  Right now
+time is not being measured in the most precise way (python request module). 
+
+# TODOs
+ * Find a more accurate way to measure response times such as TCP RTT
+ * Write unit tests for determining the byte based on timestamps
 
 ## Installation
-### Step 1. Clone repo
+### Step 1. Clone the repo
  ```
  git clone git@github.com:dkhonig/web_timing_attack.git
  ```
-### Step 2:  Install dependencies
+### Step 2: Install the dependencies
  ```
  pip install -r requirements.txt
  ```
-### Step 3: Start server
+### Step 3: Start the server
  ```
  ./server.py
  ```
-### Step 4: Launch attack
+### Step 4: Launch the attack
  ```
   ./web_timing_attack.py (look at usages below)
  ```
@@ -34,7 +39,7 @@ optional arguments:
   -b BYTES       The # of bytes to guess. Default is 8.                                                                                                                                                       
   -e EVENTID     The EventID. Default is 19295929.                                                                                                                                                            
   -f             Save data to CSVs.                                                                                                                                                                           
-  -v             Log to console in debug.                                                                                                                                                                     
+  -v             Log to console in debug mode.                                                                                                                                                                     
   --version      show program's version number and exit   
 
 ```

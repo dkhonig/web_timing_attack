@@ -123,7 +123,7 @@ if __name__ == "__main__":
     parser.add_argument('-f', action='store_true', dest='csv', default=False,
                         help='Save data to CSVs.')                          
     parser.add_argument('-v', action='store_true', dest='verbose', default=False,
-                        help='Log to console in debug.')                                
+                        help='Log to console in debug modepip.')                                
     parser.add_argument('--version', action='version', version='%(prog)s 1.0')
 
     args = parser.parse_args()
