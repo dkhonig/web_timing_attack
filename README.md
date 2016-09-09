@@ -1,4 +1,4 @@
-# ${1:Web based Timing Attack}
+# Web based Timing Attack
 This project is an ongoing experiment that is testing the theoretical aspects of side channel attacks on cryptographic operations. 
 Right now this tool can initiate a timing attack against a local or remote server that is using a constant time equality check to verify a signature.
 ## Installation
