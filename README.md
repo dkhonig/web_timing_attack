@@ -4,9 +4,18 @@ Right now this tool can execute a timing attack against a local or remote server
 
 ## Installation
  1. Clone repo
- 2. Install dependencies: '''pip install -r requirements.txt'''
- 3. Start server: ./server.py
- 4. Launch attack: ./web_timing_attack.py (look at usages below)
+ 2. Install dependencies: 
+ '''
+ pip install -r requirements.txt
+ '''
+ 3. Start server: 
+ '''
+ ./server.py
+ '''
+ 4. Launch attack:
+ '''
+  ./web_timing_attack.py (look at usages below)
+ '''
 
 ## Usage
 ```
