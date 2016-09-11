@@ -1,7 +1,6 @@
 # Web Timing Attack
 This project is an ongoing experiment testing the theoretical aspects of side channel attacks on cryptographic operations such as signature verification. 
-Currently this tool can execute a timing attack against a local or remote server that is using a constant time equality check to verify a signature.  Right now
-time is not being measured in the most precise way (python request module). 
+Currently this tool can execute a timing attack against a local or remote server that is using a linear time equality check to verify a signature. Unfortuantely right now time is not being measured in the most precise way (python urlib module). 
 
 # TODOs
  * Find a more accurate way to measure response times such as TCP RTT
